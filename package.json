@@ -7,15 +7,15 @@
   "private": true,
   "dependencies": {
     "@sap/cds": "^7",
-    "express": "^4",
+    "@sap/cds-dk": "^7",
+    "@sap/fesr-to-otel-js": "https://73555000100200018064.npmsrv.cdn.repositories.cloud.sap/@sap/fesr-to-otel-js/-/fesr-to-otel-js-1.5.0.tgz",
+    "@sap/xotel-agent-ext-js": "https://73555000100200018064.npmsrv.cdn.repositories.cloud.sap/@sap/xotel-agent-ext-js/-/xotel-agent-ext-js-1.5.13.tgz",
     "@sap/xssec": "^3",
+    "express": "^4",
     "passport": "^0"
   },
-  "devDependencies": {
-    "@sap/cds-dk": "^7"
-  },
   "scripts": {
-    "start": "cds-serve",
+    "start": "node -r @sap/xotel-agent-ext-js/dist/common/tracer ./node_modules/@sap/cds/bin/cds-serve",
     "test": "echo 1234"
   },
   "cds": {
@@ -23,9 +23,7 @@
       "features": {
         "fiori_preview": true
       },
-      "[production]": {
-        "auth": "xsuaa"
-      }
+      "auth": "xsuaa"
     }
   }
 }

@@ -9,11 +9,20 @@ build-parameters:
     - builder: custom
       commands:
         - npm i
-        - npx cds build --production
+        - npx cds build
 modules:
   - name: empty-srv
     type: nodejs
     path: gen/srv
+    properties:
+      SAP_CALM_SERVICE_TYPE: SAP_CP_CF
+      SAP_CALM_SERVICE_NAME: alm-empty-app
+      OTEL_RESOURCE_ATTRIBUTES: account=sovanta-cloudalm,sap.tenancy.tenant_id=e7bc96b2-d98b-414f-ad42-fe0790621453
+      SAP_CALM_DCI_LOG_LEVEL: debug
+      OTEL_LOG_LEVEL: info
+      SAP_CALM_INSTRUMENTATION_ENABLED: true
+      SAP_CALM_TRACING_ENABLED: true
+      SAP_CALM_METRICS_ENABLED: true
     parameters:
       buildpack: nodejs_buildpack
     build-parameters:
@@ -24,22 +33,7 @@ modules:
           srv-url: ${default-url}
     requires:
       - name: empty-auth
-
-  - name: empty
-    type: approuter.nodejs
-    path: app/
-    parameters:
-      keep-existing-routes: true
-      disk-quota: 256M
-      memory: 256M
-    requires:
-      - name: srv-api
-        group: destinations
-        properties:
-          name: srv-api # must be used in xs-app.json as well
-          url: ~{srv-url}
-          forwardAuthToken: true
-      - name: empty-auth
+      - name: app2app-destinations-calm
 
 resources:
   - name: empty-auth
@@ -49,5 +43,10 @@ resources:
       service-plan: application
       path: ./xs-security.json
       config:
-        xsappname: empty-${org}-${space}
+        xsappname: empty-auth
         tenant-mode: dedicated
+  - name: app2app-destinations-calm
+    parameters:
+      service: destination
+      service-plan: lite
+    type: org.cloudfoundry.managed-service
